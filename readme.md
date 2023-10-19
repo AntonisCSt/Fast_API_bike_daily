@@ -1,4 +1,11 @@
-# Commands to run docker locally
+
+
+# Building our CI workflow
+
+For a CI workflow we would like to build the image and run the dockerfile successfully. After that we would like to perform our tests.
+
+## Build and test locally
+
 `docker build . -t fast_api`
 `docker run -p 8000:8000 fast_api`
 
@@ -6,6 +13,52 @@ activate environment
 
 `python send_data.py`
 `pytest ./`
+
+## Build and test in Github Actions
+
+For our this simple case we are going to upload our model in the repo. Note: This generally is not a best practice since we would like to hide this information. However, we are going to see in a later, optional chapter, how to address this even if it is not within the scope of foundations course.
+
+```yml
+name: Build-Test
+run-name: Fast-Api Docker build and test
+on:
+  push:
+    branches:
+      - main  # The default branch name in your repository
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.1 # Good practice to have enviroment variables. This contains also the tag.
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker
+        run: docker build . -t $DOCKER_IMAGE_NAME
+
+      - name: Run Docker
+        run: docker run -d $DOCKER_IMAGE_NAME
+
+      - name: Wait for the server to start
+        run: sleep 6  
+
+      - name: install dev requirements to run pytest
+        run: pip install -r dev-requirements.txt
+
+      - name: Test container with pytest
+        run: pytest ./
+
+```
+
+As you can see, we created a dev-requirements.txt that installs the required libraries to run pytest.
+
+
+
 
 
 There is an issue here on where we are going to add the model. We want to build the image with GithubActions (one their server). But the problem here is that size of the trained model is larger than 100MB (the maximum file size on GitHub). Therefore, we decided o upload the model in the cloud. Allowing, only ourselves to access it.
