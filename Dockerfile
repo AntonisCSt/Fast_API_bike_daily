@@ -13,11 +13,11 @@ COPY requirements.txt .
 COPY config.py .
 
 # Expose the port that FastAPI will run on
-EXPOSE 80
+EXPOSE 8000
 
 RUN pip install -r requirements.txt
 
-CMD ["uvicorn", "prediction_service:app","--reload", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "prediction_service:app","--reload", "--host", "0.0.0.0", "--port", "8000"]
 
 
 
