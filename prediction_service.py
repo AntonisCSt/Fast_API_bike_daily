@@ -3,19 +3,14 @@ import uvicorn
 from loguru import logger
 from schema.model_schema import BikeSharingDayDataInputs
 from sklearn.ensemble import RandomForestClassifier
-from schema.model_functions import ColumnDropper #you need this for the model_pipeline
+from functions.model_functions import ColumnDropper #you need this for the model_pipeline
 import joblib
 import pandas as pd
-from pathlib import Path
-
+from config import pickle_file_path #path for the mode pkl file
 app = FastAPI(debug=True)
 
-script_directory = Path(__file__).resolve().parent
-pickle_file_path = script_directory / "bike_pipeline_daily_predict.pkl"
-loaded_pipeline = joblib.load(pickle_file_path)
 
-# Set the columns_to_drop for ColumnDropper
-#loaded_pipeline.named_steps['column_dropper'].columns_to_drop = ['dteday', 'instant', 'casual', 'registered']
+loaded_pipeline = joblib.load(pickle_file_path)
 
 @app.get("/")
 async def root():
@@ -47,8 +42,6 @@ async def predict(input_data: BikeSharingDayDataInputs):
     
     logger.info(f"Prediction results: {results}")
     return results
-
-
 
 if __name__ == '__main__':
     uvicorn.run(app)
