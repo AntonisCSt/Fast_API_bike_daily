@@ -6,8 +6,8 @@ For a CI workflow we would like to build the image and run the dockerfile succes
 
 ## Build and test locally
 
-`docker build . -t fast_api`
-`docker run -p 8000:8000 fast_api`
+`docker build . -t fast-api-bike-daily:0.0.1`
+`docker run -p 8000:8000 fast-api-bike-daily:0.0.1`
 
 activate environment
 
@@ -53,12 +53,33 @@ jobs:
       - name: Test container with pytest
         run: pytest ./
 
+
+
 ```
 
 As you can see, we created a dev-requirements.txt that installs the required libraries to run pytest.
 
+## Continous Deployment
 
+Let's check the commands locally first:
 
+Make sure you have an account on https://hub.docker.com/
+
+In your terminal log in to dockerhub via:
+`docker login`
+
+push the image on Dockerhub with the tag:
+
+`docker images`
+
+create a repository with:
+
+`docker tag fast-api-bike-daily:0.0.1 [yourdockerhubname]/fast-api-bike-daily:0.0.1`
+
+`docker push [yourdockerhubname]/fast-api-bike-daily:0.0.1`
+
+in case you have an error: `denied: requested access to the resource is denied` check this solution:
+https://stackoverflow.com/questions/41984399/denied-requested-access-to-the-resource-is-denied-docker
 
 
 There is an issue here on where we are going to add the model. We want to build the image with GithubActions (one their server). But the problem here is that size of the trained model is larger than 100MB (the maximum file size on GitHub). Therefore, we decided o upload the model in the cloud. Allowing, only ourselves to access it.

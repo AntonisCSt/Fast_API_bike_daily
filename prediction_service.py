@@ -2,7 +2,6 @@ from fastapi import FastAPI
 import uvicorn
 from loguru import logger
 from schema.model_schema import BikeSharingDayDataInputs
-from sklearn.ensemble import RandomForestClassifier
 from functions.model_functions import ColumnDropper #you need this for the model_pipeline
 import joblib
 import pandas as pd
