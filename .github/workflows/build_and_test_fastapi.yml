@@ -8,9 +8,9 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.1 # Good practice to have enviroment variables. This contains also the tag.
       REGISTRY: antonisst
       REPO_NAME: fast-api-bike-daily
+      IMAGE_TAG: '0.0.1'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,5 +46,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: antonisst/bike-test-me
-          tags: latest, ${{ github.run_number }}
+          repository: ${{env.REGISTRY}}/${{env.REPO_NAME}}
+          tags: ${{env.IMAGE_TAG}}
