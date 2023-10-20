@@ -1,5 +1,8 @@
 name: Build-Test
 run-name: Fast-Api Docker build and test
+env:
+  DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.2
+  REGISTRY: antonisst
 on:
   push:
     branches:
@@ -7,9 +10,6 @@ on:
 jobs:
   build-docker:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.2
-      REGISTRY: antonisst
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,6 +50,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: $REGISTRY / $DOCKER_IMAGE_NAME
+          tags: ${{env.REGISTRY}} / ${{env.DOCKER_IMAGE_NAME}}
 
           
