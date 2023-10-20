@@ -50,6 +50,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }} / ${{env.DOCKER_IMAGE_NAME}}
+          tags: ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
 
           
