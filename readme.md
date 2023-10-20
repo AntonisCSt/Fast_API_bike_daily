@@ -151,7 +151,9 @@ In this new job we first log it to Docker Hub using Github secrets. and then we 
 
 EXERCISE 1: Write again the job push_to_registry using docker/build-push-action@v4. Try find it yourself, it might be required by a company with legacy code. Help: check out https://github.com/marketplace/actions/build-and-push-docker-images?version=v5.0.0
 
+EXERCISE 2: Edit the workflow to skip running the workflow if we edit the readme.md.
 
+EXERCISE 3: Add on the `on:` part of the workflow the `pull`. Search the correct syntax. And test it with a new branch.  
 
 There is an issue here on where we are going to add the model. We want to build the image with GithubActions (one their server). But the problem here is that size of the trained model is larger than 100MB (the maximum file size on GitHub). Therefore, we decided o upload the model in the cloud. Allowing, only ourselves to access it.
 
