@@ -1,22 +1,26 @@
 
 
-# Building our CI workflow
+# Building Our CI Workflow
 
-For a CI workflow we would like to build the image and run the dockerfile successfully. After that we would like to perform our tests.
+In our CI workflow, our goal is to build the Docker image successfully and then run the Dockerfile. Afterward, we will execute our tests.
 
-## Build and test locally
+## Build and Test Locally
 
-`docker build . -t fast-api-bike-daily:0.0.1`
-`docker run -p 8000:8000 fast-api-bike-daily:0.0.1`
+To build and test the project locally, follow these steps:
+
+```shell
+docker build . -t fast-api-bike-daily:0.0.1
+docker run -p 8000:8000 fast-api-bike-daily:0.0.1
 
 activate environment
 
 `python send_data.py`
 `pytest ./`
+```
 
 ## Build and test in Github Actions
 
-For our this simple case we are going to upload our model in the repo. Note: This generally is not a best practice since we would like to hide this information. However, we are going to see in a later, optional chapter, how to address this even if it is not within the scope of foundations course.
+For this simple case, we will upload our model to the repository. Note: This is generally not a best practice because we should hide this information. However, we will address this in a later, optional chapter, even if it is not within the scope of the foundation's course.
 
 ```yml
 name: Build-Test
@@ -60,22 +64,23 @@ As you can see, we created a dev-requirements.txt that installs the required lib
 
 ## Continous Deployment
 
-Let's check the commands locally first:
+Let's first check the commands locally:
 
-Make sure you have an account on https://hub.docker.com/
+Make sure you have an account on Docker Hub.
 
-In your terminal log in to dockerhub via:
+In your terminal, log in to Docker Hub with:
 `docker login`
 
-push the image on Dockerhub with the tag:
+Push the image to Docker Hub with the tag:
 
 `docker images`
 
 create a repository with:
 
-`docker tag fast-api-bike-daily:0.0.1 [yourdockerhubname]/fast-api-bike-daily:0.0.1`
-
-`docker push [yourdockerhubname]/fast-api-bike-daily:0.0.1`
+```shell
+docker tag fast-api-bike-daily:0.0.1 [yourdockerhubname]/fast-api-bike-daily:0.0.1
+docker push [yourdockerhubname]/fast-api-bike-daily:0.0.1
+ ```
 
 in case you have an error: `denied: requested access to the resource is denied` check this solution:
 https://stackoverflow.com/questions/41984399/denied-requested-access-to-the-resource-is-denied-docker
@@ -146,18 +151,19 @@ jobs:
           
 ```
 
-In this new job we first log it to Docker Hub using Github secrets. and then we use from marketplace the `docker/build-push-action@v5` adding the information required for the registry and the tags!
+In this new job, we first log in to Docker Hub using GitHub secrets, and then we use the docker/build-push-action@v5 from the marketplace, adding the required information for the registry and the tags.
 
+EXERCISE 1: Rewrite the job push_to_registry using docker/build-push-action@v4. You can try to find it yourself, as it might be required by a company with legacy code. Check out https://github.com/marketplace/actions/build-and-push-docker-images?version=v5.0.0
 
-EXERCISE 1: Write again the job push_to_registry using docker/build-push-action@v4. Try find it yourself, it might be required by a company with legacy code. Help: check out https://github.com/marketplace/actions/build-and-push-docker-images?version=v5.0.0
+EXERCISE 2:  Edit the workflow to skip running the workflow if the readme.md file is edited. This can be achieved by modifying the on part of the workflow. Refer to the GitHub Actions documentation for the correct syntax.
 
-EXERCISE 2: Edit the workflow to skip running the workflow if we edit the readme.md.
+EXERCISE 3: Add the pull_request event to the on part of the workflow. You can search for the correct syntax in the GitHub Actions documentation and test it with a new branch.  
 
-EXERCISE 3: Add on the `on:` part of the workflow the `pull`. Search the correct syntax. And test it with a new branch.  
+## Dealing with issues in the workflow
 
-There is an issue here on where we are going to add the model. We want to build the image with GithubActions (one their server). But the problem here is that size of the trained model is larger than 100MB (the maximum file size on GitHub). Therefore, we decided o upload the model in the cloud. Allowing, only ourselves to access it.
+There is an issue here regarding where we are going to add the model. We want to build the image with GitHub Actions on their server. However, the problem is that the size of the trained model is larger than 100MB (the maximum file size on GitHub). Therefore, we can upload the model to the cloud, allowing only ourselves to access it
 
-# Upload model to the cloud
+# Uploading model to the cloud
 
 We are going to use AWS.
 
