@@ -8,10 +8,8 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.1
+      DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.2
       REGISTRY: antonisst
-      REPO_NAME: fast-api-bike-daily
-      IMAGE_TAG: '0.0.1'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,6 +50,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: antonisst/fast-api-bike-daily:0.0.2
+          tags: $REGISTRY / $DOCKER_IMAGE_NAME
 
           
