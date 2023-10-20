@@ -8,6 +8,7 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     env:
+      DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.1
       REGISTRY: antonisst
       REPO_NAME: fast-api-bike-daily
       IMAGE_TAG: '0.0.1'
