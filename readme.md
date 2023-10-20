@@ -21,6 +21,9 @@ For our this simple case we are going to upload our model in the repo. Note: Thi
 ```yml
 name: Build-Test
 run-name: Fast-Api Docker build and test
+env:
+  DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.2
+  REGISTRY: antonisst
 on:
   push:
     branches:
@@ -28,9 +31,6 @@ on:
 jobs:
   build-docker:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.1 # Good practice to have enviroment variables. This contains also the tag.
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,7 +52,6 @@ jobs:
 
       - name: Test container with pytest
         run: pytest ./
-
 
 
 ```
@@ -80,6 +79,78 @@ create a repository with:
 
 in case you have an error: `denied: requested access to the resource is denied` check this solution:
 https://stackoverflow.com/questions/41984399/denied-requested-access-to-the-resource-is-denied-docker
+
+Note: If it takes too long to push you can cancel the push with ctrl+C. Github Actions network will be much faster.
+
+Let's edit the Github Actions based on: https://github.com/docker/build-push-action
+It uses docker/build-push-action@v5
+
+Requirment: We first add the DockerHub username and password as secrets like this guide: https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions
+
+```yml
+
+name: Build-Test
+run-name: Fast-Api Docker build and test
+env:
+  DOCKER_IMAGE_NAME: fast-api-bike-daily:0.0.2
+  REGISTRY: antonisst
+on:
+  push:
+    branches:
+      - main  # The default branch name in your repository
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker
+        run: docker build . -t $DOCKER_IMAGE_NAME
+
+      - name: Run Docker
+        run: docker run -d -p 8000:8000 $DOCKER_IMAGE_NAME
+
+      - name: Wait for the server to start
+        run: sleep 6  
+
+      - name: install dev requirements to run pytest
+        run: pip install -r dev-requirements.txt
+
+      - name: Test container with pytest
+        run: pytest ./
+      
+  push_to_registry:
+    name: Push Docker image to Docker Hub
+    needs: build-docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
+
+          
+```
+
+In this new job we first log it to Docker Hub using Github secrets. and then we use from marketplace the `docker/build-push-action@v5` adding the information required for the registry and the tags!
+
+
+EXERCISE 1: Write again the job push_to_registry using docker/build-push-action@v4. Try find it yourself, it might be required by a company with legacy code. Help: check out https://github.com/marketplace/actions/build-and-push-docker-images?version=v5.0.0
+
 
 
 There is an issue here on where we are going to add the model. We want to build the image with GithubActions (one their server). But the problem here is that size of the trained model is larger than 100MB (the maximum file size on GitHub). Therefore, we decided o upload the model in the cloud. Allowing, only ourselves to access it.
