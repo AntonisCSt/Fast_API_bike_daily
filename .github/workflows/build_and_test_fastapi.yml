@@ -43,9 +43,15 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Push to Docker Hub
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{env.REGISTRY}}/${{env.REPO_NAME}}
-          tags: ${{env.IMAGE_TAG}}
+          context: .
+          file: ./Dockerfile  # Adjust this path to your Dockerfile if necessary
+          platforms: linux/amd64  # Specify the desired platform
+          push: true
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_REGISTRY: ${{ env.REGISTRY }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
